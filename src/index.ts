@@ -1,8 +1,8 @@
-import "@esotericsoftware/spine-pixi-v7";
-import "./style.css";
-import { Spine } from "@esotericsoftware/spine-pixi-v7";
 import type { Animation } from "@esotericsoftware/spine-core";
+import "@esotericsoftware/spine-pixi-v7";
+import { Spine } from "@esotericsoftware/spine-pixi-v7";
 import { Application, Assets } from "pixi.js";
+import "./style.css";
 
 let currentSpine: Spine | null = null;
 let currentAnimation = "";
@@ -91,10 +91,19 @@ window.onload = async (): Promise<void> => {
         animationSelect.appendChild(option);
     });
 
+    // Create and add the animation duration label
+    const animationDurationLabel = document.createElement('span');
+    animationDurationLabel.className = 'animation-duration';
+    animationDurationLabel.textContent = `Duration: ${spineExample.skeleton.data.animations[0].duration.toFixed(2)}s`;
+
     animationSelect.onchange = (e) => {
         const select = e.target as HTMLSelectElement;
         currentAnimation = select.value;
         if (currentSpine) {
+            const animation = currentSpine.skeleton.data.animations.find(a => a.name === currentAnimation);
+            if (animation) {
+                animationDurationLabel.textContent = `Duration: ${animation.duration.toFixed(2)}s`;
+            }
             currentSpine.state.setAnimation(0, currentAnimation);
         }
     };
@@ -121,6 +130,10 @@ window.onload = async (): Promise<void> => {
     controlGroup.appendChild(skinControl);
     controlGroup.appendChild(animationControl);
     controlGroup.appendChild(playButton);
+
+    // Append the animation duration label to the control group at the end
+    controlGroup.appendChild(animationDurationLabel);
+
     document.body.appendChild(controlGroup);
 };
 
